@@ -4,3 +4,4 @@ askUser.js*
 type.js
 *.jpg
 *.png
+.vscode/*
