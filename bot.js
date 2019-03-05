@@ -9,7 +9,10 @@ const fs = require('fs');
 
 
 // Instantiating Telegram bot with API key provided
-const bot = new Telebot('769008318:AAEF3zVVDM91vsv8bgu83VgEfiR-A-Gn6XI');
+const bot = new Telebot({
+    token: '769008318:AAEF3zVVDM91vsv8bgu83VgEfiR-A-Gn6XI',
+    usePlugins: ['commandButton', 'askUser']
+});
 
 
 // Saving Twitter configutaions to a const
@@ -28,8 +31,8 @@ const T = new twit(tConfig);
 // Twitter Methods Begin
 
 // Method to Post a Twit
-sendTwit = (data) => {
-
+sendTwit = (msg,type) => {
+    bot.sendMessage(msg.from.id,"Done Sent")
 }
 
 
@@ -48,8 +51,22 @@ ownTimeline = (msg) => {
 
 
 // Method to get another users's timeline
-userTimeline = (data) => {
-
+userTimeline = (msg) => {
+    bot.sendMessage(msg.from.id, `Tweets from ${msg.text}`);
+    T.get('statuses/user_timeline', {
+        screen_name: `${msg.text}`,
+        count: 10,
+        tweet_mode: 'extended'
+    }, (err, data, response) => {
+        if (data) {
+            data.forEach(element => {
+                bot.sendMessage(msg.from.id, element.full_text);
+            });
+        }
+        if (err) {
+            console.log(err)
+        }
+    });
 }
 
 
@@ -75,29 +92,118 @@ async function saveFile(info, msg) {
 
 // Telegram Bot Setup starts
 
-// Command for post
-bot.on('/post',(msg) => {
-    console.log(msg);
-    
-})
 
+//  Command  /twitter
+bot.on('/twitter', msg => {
 
-// bot.on('text', (msg) => {
-//     // msg.reply.text(msg.text)
-//     console.log(msg.from.id);
-//     bot.sendMessage(msg.from.id, msg.text);
-//     ownTimeline(msg);
-// });
+    // Inline keyboard markup
+    const replyMarkup = bot.inlineKeyboard([
+        [
+            // First row with command callback button
+            bot.inlineButton('Get own timeline', {
+                callback: '/getOwn'
+            })
+        ],
+        [
+            // Second row with command callback button
+            bot.inlineButton('Get user tweets', {
+                callback: '/getUser'
+            })
+        ],
+        [
+            // Third row with command callback button
+            bot.inlineButton('Send Tweet', {
+                callback: '/sendTweet'
+            })
+        ],
 
+        // [
+        //     // Second row with regular command button
+        //     bot.inlineButton('Regular data button', {
+        //         callback: 'get'
+        //     })
+        // ]
+    ]);
 
+    // Send message with keyboard markup
+    return bot.sendMessage(msg.from.id, 'Example of command button.', {
+        replyMarkup
+    });
 
-bot.on('photo', (msg) => {
-    bot.sendPhoto(msg.from.id, "./1.jpg");
-    fileinfo =
-        bot.getFile(msg.photo[(msg.photo).length - 1].file_id)
-        .then(async (info) => {
-            await saveFile(info, msg);
-            await bot.sendPhoto(msg.from.id, "./2.jpg");
-        });
 });
+
+
+// Command /getOwn
+bot.on('/getOwn', msg => {
+    return ownTimeline(msg);
+});
+
+
+// Command /getUser
+bot.on('/getUser', msg => {
+    const id = msg.from.id;
+    return bot.sendMessage(id, 'Enter twitter username:', {
+        ask: 'username'
+    });
+});
+
+
+
+// Command /status
+bot.on('/sendTweet', msg => {
+    const id = msg.from.id;
+    return bot.send(id, 'Enter status:', {
+        ask: 'status'
+    });
+});
+
+
+// Button callback
+bot.on('callbackQuery', (msg) => {
+
+    // console.log('callbackQuery data:', msg.data);
+    bot.answerCallbackQuery(msg.id);
+
+});
+
+// Addding buttons for Twitter interactivity
+
+// Asking events
+
+// Ask twitter username event
+bot.on('ask.username', msg => {
+
+    const id = msg.from.id;
+    return userTimeline(msg);
+
+});
+
+
+
+// Ask status for twitter event
+bot.on('ask.status', (msg, self) => {
+        let id = msg.from.id;
+        let replyToMessage = msg.message_id;
+        let type = self.type;
+        let parseMode = 'html';
+        return bot.sendMessage(
+            id, `This is a <b>${ type }</b> message.`, {replyToMessage, parseMode}
+        );
+    
+    
+});
+
+
+
+
+
+// bot.on('photo', (msg) => {
+//     bot.sendPhoto(msg.from.id, "./1.jpg");
+//     fileinfo =
+//         bot.getFile(msg.photo[(msg.photo).length - 1].file_id)
+//         .then(async (info) => {
+//             await saveFile(info, msg);
+//             await bot.sendPhoto(msg.from.id, "./2.jpg");
+//         });
+// });
 bot.start();

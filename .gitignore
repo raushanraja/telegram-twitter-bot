@@ -1,3 +1,6 @@
 node_modules/*
 inlinekeyboard*
 askUser.js*
+type.js
+*.jpg
+*.png
