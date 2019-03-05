@@ -152,7 +152,7 @@ bot.on('/getUser', msg => {
 // Command /status
 bot.on('/sendTweet', msg => {
     const id = msg.from.id;
-    return bot.send(id, 'Enter status:', {
+    return bot.sendMessage(id, 'Enter status:', {
         ask: 'status'
     });
 });
@@ -181,15 +181,15 @@ bot.on('ask.username', msg => {
 
 
 // Ask status for twitter event
-bot.on('ask.status', (msg, self) => {
-        let id = msg.from.id;
-        let replyToMessage = msg.message_id;
-        let type = self.type;
-        let parseMode = 'html';
-        return bot.sendMessage(
-            id, `This is a <b>${ type }</b> message.`, {replyToMessage, parseMode}
-        );
-    
+bot.on('ask.status', (msg) => {
+        
+    if(msg.photo){
+        console.log('photo'); 
+    }else{
+        console.log('not photo');
+        
+    }
+    // return sendTwit(msg);
     
 });
 
@@ -203,7 +203,7 @@ bot.on('ask.status', (msg, self) => {
 //         bot.getFile(msg.photo[(msg.photo).length - 1].file_id)
 //         .then(async (info) => {
 //             await saveFile(info, msg);
-//             await bot.sendPhoto(msg.from.id, "./2.jpg");
+//             await botkz.sendPhoto(msg.from.id, "./2.jpg");
 //         });
 // });
 bot.start();
