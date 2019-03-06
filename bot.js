@@ -109,7 +109,7 @@ tweetWithImage = (msg) => {
     let status = msg.caption;
     let id = msg.from.id;
     let replyToMessage = msg.message_id;
-    let b64content = fs.readFileSync('./2.jpg', {
+    let b64content = fs.readFileSync('./2.png', {
         encoding: 'base64'
     })
 
@@ -148,8 +148,8 @@ tweetWithImage = (msg) => {
                         bot.sendMessage(
                             id, "Sent Successfully", {
                                 replyToMessage
-                            }
-                        );
+                            } );
+                            console.log(data);
                     }
                     if (err) {
                         bot.sendMessage(id, "Sorry! error occured", {
@@ -171,7 +171,7 @@ tweetWithImage = (msg) => {
 async function saveFile(info, msg) {
     const res = fetch(info.fileLink)
     const result = await res;
-    const dest = await fs.createWriteStream('./2.jpg');
+    const dest = await fs.createWriteStream('./2.png');
     const save = await result.body.pipe(dest);
     return new Promise((resolve, reject) => {
         dest.on('finish', resolve)
