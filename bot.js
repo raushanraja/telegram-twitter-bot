@@ -75,19 +75,30 @@ ownTimeline = (msg) => {
 userTimeline = (msg) => {
     let id = msg.from.id;
     let replyToMessage = msg.message_id;
-    bot.sendMessage(msg.from.id, `Tweets from ${msg.text}`);
     T.get('statuses/user_timeline', {
         screen_name: `${msg.text}`,
         count: 15,
         tweet_mode: 'extended'
     }, (err, data, response) => {
-        if (data) {
-            data.forEach(element => {
-                bot.sendMessage(id, element.full_text);
-            });
+        if (data[0].full_text != undefined) {
+                for(let i=0;i<2;i++){
+                    if (i==0) {
+                        bot.sendMessage(id, `Tweets from ${msg.text}`);
+                    }else if(i==1){
+                        data.forEach(element => {
+                            bot.sendMessage(id, element.full_text);
+                        });
+                    }
+                }
+        } else {
+            bot.sendMessage(id, "Sorry can't find User", {
+                replyToMessage
+            })
         }
         if (err) {
-            bot.sendMessage(id,"Sorry can't find User",{replyToMessage})
+            bot.sendMessage(id, "Sorry can't find User", {
+                replyToMessage
+            })
         }
     });
 }
@@ -208,7 +219,7 @@ bot.on('/twitter', msg => {
     ]);
 
     // Send message with keyboard markup
-    return bot.sendMessage(msg.from.id, 'Example of command button.', {
+    return bot.sendMessage(msg.from.id, 'Choose Option', {
         replyMarkup
     });
 
