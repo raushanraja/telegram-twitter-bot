@@ -31,8 +31,29 @@ const T = new twit(tConfig);
 // Twitter Methods Begin
 
 // Method to Post a Twit
-sendTwit = (msg,type) => {
-    bot.sendMessage(msg.from.id,"Done Sent")
+sendTwit = (msg) => {
+    let id = msg.from.id;
+    let replyToMessage = msg.message_id;
+    let params = {
+        status: `${msg.text}`
+    }
+
+    console.log(params.status);
+    T.post('statuses/update', params, function (err, data, response) {
+        if (data) {
+            bot.sendMessage(
+                id, "Sent Successfully", {
+                    replyToMessage
+                }
+            );
+        }
+        if (err) {
+            bot.sendMessage(id, "Sorry! error occured", {
+                replyToMessage
+            })
+        }
+
+    })
 }
 
 
@@ -69,6 +90,65 @@ userTimeline = (msg) => {
     });
 }
 
+
+tweetWithImage = (msg) => {
+    // Method post a tweet with media
+    let status = msg.caption;
+    let id = msg.from.id;
+    let replyToMessage = msg.message_id;
+    let b64content = fs.readFileSync('./2.jpg', {
+        encoding: 'base64'
+    })
+
+    console.log("Status:", status);
+
+    if (status == undefined) {
+        status = "."
+
+    }
+
+    // first we must post the media to Twitter
+    T.post('media/upload', {
+        media_data: b64content
+    }, function (err, data, response) {
+        // now we can assign alt text to the media, for use by screen readers and
+        // other text-based presentations and interpreters
+        let mediaIdStr = data.media_id_string
+        // var altText = "Small flowers in a planter on a sunny balcony, blossoming."
+        let meta_params = {
+            media_id: mediaIdStr,
+            // alt_text: {
+            //     text: altText
+            // }
+        }
+
+        T.post('media/metadata/create', meta_params, function (err, data, response) {
+            if (!err) {
+                // now we can reference the media and post a tweet (media will attach to the tweet)
+                let params = {
+                    status: status,
+                    media_ids: [mediaIdStr]
+                }
+
+                T.post('statuses/update', params, function (err, data, response) {
+                    if (data) {
+                        bot.sendMessage(
+                            id, "Sent Successfully", {
+                                replyToMessage
+                            }
+                        );
+                    }
+                    if (err) {
+                        bot.sendMessage(id, "Sorry! error occured", {
+                            replyToMessage
+                        })
+                    }
+                })
+            }
+        })
+    })
+
+}
 
 // Twitter Methods End
 
@@ -181,16 +261,31 @@ bot.on('ask.username', msg => {
 
 
 // Ask status for twitter event
-bot.on('ask.status', (msg) => {
-        
-    if(msg.photo){
-        console.log('photo'); 
-    }else{
-        console.log('not photo');
-        
+bot.on('ask.status', (msg, self) => {
+    let id = msg.from.id;
+    let replyToMessage = msg.message_id;
+    let type = self.type;
+    let parseMode = 'html';
+    // console.log(self);
+
+    if (self.type == "photo") {
+        return fileinfo =
+            bot.getFile(msg.photo[(msg.photo).length - 1].file_id)
+            .then(async (info) => {
+                await saveFile(info, msg);
+                // await bot.sendPhoto(msg.from.id, "./2.jpg");
+                await tweetWithImage(msg);
+            });
+    } else if (self.type == "text") {
+        return sendTwit(msg);
     }
-    // return sendTwit(msg);
-    
+    // return bot.sendMessage(
+    //     id, `This is a <b>${ type }</b> message.`, {
+    //         replyToMessage,
+    //         parseMode
+    //     }
+    // );
+
 });
 
 
@@ -203,7 +298,7 @@ bot.on('ask.status', (msg) => {
 //         bot.getFile(msg.photo[(msg.photo).length - 1].file_id)
 //         .then(async (info) => {
 //             await saveFile(info, msg);
-//             await botkz.sendPhoto(msg.from.id, "./2.jpg");
+//             await botz.sendPhoto(msg.from.id, "./2.jpg");
 //         });
 // });
 bot.start();
