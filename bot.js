@@ -73,19 +73,21 @@ ownTimeline = (msg) => {
 
 // Method to get another users's timeline
 userTimeline = (msg) => {
+    let id = msg.from.id;
+    let replyToMessage = msg.message_id;
     bot.sendMessage(msg.from.id, `Tweets from ${msg.text}`);
     T.get('statuses/user_timeline', {
         screen_name: `${msg.text}`,
-        count: 10,
+        count: 15,
         tweet_mode: 'extended'
     }, (err, data, response) => {
         if (data) {
             data.forEach(element => {
-                bot.sendMessage(msg.from.id, element.full_text);
+                bot.sendMessage(id, element.full_text);
             });
         }
         if (err) {
-            console.log(err)
+            bot.sendMessage(id,"Sorry can't find User",{replyToMessage})
         }
     });
 }
