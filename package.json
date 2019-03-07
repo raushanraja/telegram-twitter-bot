@@ -9,8 +9,10 @@
   "author": "raushan",
   "license": "ISC",
   "dependencies": {
+    "mongoose": "^5.4.17",
     "node-fetch": "^2.3.0",
     "telebot": "^1.2.6",
-    "twit": "^2.2.11"
+    "twit": "^2.2.11",
+    "validator": "^10.11.0"
   }
 }
