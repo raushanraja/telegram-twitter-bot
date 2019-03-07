@@ -127,12 +127,8 @@ tweetWithImage = (msg) => {
         // now we can assign alt text to the media, for use by screen readers and
         // other text-based presentations and interpreters
         let mediaIdStr = data.media_id_string
-        // var altText = "Small flowers in a planter on a sunny balcony, blossoming."
         let meta_params = {
             media_id: mediaIdStr,
-            // alt_text: {
-            //     text: altText
-            // }
         }
 
         T.post('media/metadata/create', meta_params, function (err, data, response) {
@@ -187,7 +183,7 @@ async function saveFile(info, msg) {
 
 
 //  Command  /twitter
-bot.on('/twitter', msg => {
+bot.on('/twitter', (msg) => {
 
     // Inline keyboard markup
     const replyMarkup = bot.inlineKeyboard([
@@ -210,12 +206,6 @@ bot.on('/twitter', msg => {
             })
         ],
 
-        // [
-        //     // Second row with regular command button
-        //     bot.inlineButton('Regular data button', {
-        //         callback: 'get'
-        //     })
-        // ]
     ]);
 
     // Send message with keyboard markup
@@ -253,10 +243,7 @@ bot.on('/sendTweet', msg => {
 
 // Button callback
 bot.on('callbackQuery', (msg) => {
-
-    // console.log('callbackQuery data:', msg.data);
     bot.answerCallbackQuery(msg.id);
-
 });
 
 // Addding buttons for Twitter interactivity
@@ -272,46 +259,24 @@ bot.on('ask.username', msg => {
 });
 
 
-
 // Ask status for twitter event
 bot.on('ask.status', (msg, self) => {
     let id = msg.from.id;
     let replyToMessage = msg.message_id;
     let type = self.type;
     let parseMode = 'html';
-    // console.log(self);
-
+   
     if (self.type == "photo") {
         return fileinfo =
             bot.getFile(msg.photo[(msg.photo).length - 1].file_id)
             .then(async (info) => {
                 await saveFile(info, msg);
-                // await bot.sendPhoto(msg.from.id, "./2.jpg");
                 await tweetWithImage(msg);
             });
     } else if (self.type == "text") {
         return sendTwit(msg);
     }
-    // return bot.sendMessage(
-    //     id, `This is a <b>${ type }</b> message.`, {
-    //         replyToMessage,
-    //         parseMode
-    //     }
-    // );
 
 });
 
-
-
-
-
-// bot.on('photo', (msg) => {
-//     bot.sendPhoto(msg.from.id, "./1.jpg");
-//     fileinfo =
-//         bot.getFile(msg.photo[(msg.photo).length - 1].file_id)
-//         .then(async (info) => {
-//             await saveFile(info, msg);
-//             await botz.sendPhoto(msg.from.id, "./2.jpg");
-//         });
-// });
 bot.start();
