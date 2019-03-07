@@ -6,6 +6,10 @@ const Telebot = require('telebot');
 const twit = require('twit');
 const fetch = require('node-fetch');
 const fs = require('fs');
+const mongoose= require("mongoose")
+const db = require('./database')
+const link=require("./models/linksSave")
+
 
 
 // Instantiating Telegram bot with API key provided
@@ -278,5 +282,58 @@ bot.on('ask.status', (msg, self) => {
     }
 
 });
+
+
+bot.on('/link',(msg)=>{
+    let data=(msg.text).split(" ");
+    let toSave={
+        linkName:`${data[1].split("-").join(" ")}`,
+        linkURL:`${data[2]}`,
+        linkCategory:`${data[3].split("-")}`
+    }
+
+    let url= new link({
+        linkName:`${toSave.linkName}`,
+        linkURL:`${toSave.linkURL}`,
+        linkCategory:`${toSave.linkCategory}`,
+    })
+    
+    url.save((err,res)=>{
+        if(err){
+            if(err.code==11000){
+                console.log('Error:Duplicate url,\nurl already exists');  
+                bot.sendMessage(msg.from.id,'Error:Duplicate url,\nurl already exists');  
+            }        
+        }
+        else{
+            console.log(res);
+            
+        }
+    })
+    
+    console.log(data);
+    console.log(toSave.linkName);
+    console.log(toSave.linkCategory);
+    
+})
+
+bot.on('/lfind',(msg)=>{
+    let text=msg.text.split(" ")[1];
+    let replyToMessage=msg.message_id;
+    console.log(text);
+    
+    link.find({"linkName":{'$regex':text,'$options':'i'}})
+    .then((doc)=>{
+        doc.forEach(element => {
+            console.log(element.linkURL);
+            bot.sendMessage(msg.from.id,element.linkURL,{replyToMessage})
+            
+        });
+    })
+    .catch((err) => {
+        console.log(err);
+        
+    })
+})
 
 bot.start();
