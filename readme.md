@@ -17,7 +17,7 @@
     - API secret key
     - Access token
     - Access token secret
-    - (link to create app and get these keys)[https://developer.twitter.com/en/apps]
+    - [link to create app and get these keys](https://developer.twitter.com/en/apps)
 
 - for interaction with telegram bot
     - bot token
@@ -29,7 +29,7 @@
 - get own twitter timeline
 - get other user timeline using their username (without @ symbol)
 - send tweet
-    - without pic: just send text after selection options
+    - without pic: just send text after selecting options
     - with picture:
         - select picture and add text in the caption of picture and send
 
