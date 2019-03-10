@@ -17,7 +17,7 @@
     - API secret key
     - Access token
     - Access token secret
-    - link to create app and get these keys
+    - (link to create app and get these keys)[https://developer.twitter.com/en/apps]
 
 - for interaction with telegram bot
     - bot token
