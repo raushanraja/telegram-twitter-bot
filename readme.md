@@ -3,6 +3,10 @@
 ## Created using nodejs
 
 ### API Used
+- Twitter API
+- Telegram Bot API
+
+### Node Modules Used
 - [twit](https://www.npmjs.com/package/twit) for twitter
 - [telebot](https://www.npmjs.com/package/telebot) for telegram
 
