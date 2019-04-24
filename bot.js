@@ -8,20 +8,20 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 
 
-// Instantiating Telegram bot with API key provided
+// Instantiating Telegram bot with API key provided // IMPORTANT, PLEASE MAKE CHANGES
 const bot = new Telebot({
-    token: '769008318:AAEF3zVVDM91vsv8bgu83VgEfiR-A-Gn6XI',
+    token: 'Telegram Bot Token Here',       // IMPORTANT, PLEASE MAKE CHANGES
     usePlugins: ['commandButton', 'askUser']
 });
 
 
-// Saving Twitter configutaions to a const
+// Saving Twitter configutaions to a const // IMPORTANT, PLEASE MAKE CHANGES
 const tConfig = {
-    consumer_key: 'hTgDirsZf2DGFeN159kUz0GhQ',
-    consumer_secret: '4aNf9q7r6GroW1nEgPpyCq6dSmbtKleQs4V2UQe7BfKPn47AtP',
-    access_token: '141491522-TV7bdJCxVMzuXlbuUZqGSgeCo2Pkmg39xKYvpUCg',
-    access_token_secret: 'FbElSCUFI4V69cpINIIcXsNL5BohbOkhvewgmx3OMsLLc'
-}
+    consumer_key: 'Twitter Consumer Key Here',
+    consumer_secret: 'Twitter Consumer Secret Here',
+    access_token: 'Twitter Access Token Here',
+    access_token_secret: 'Twitter Token Secret Here'
+} // IMPORTANT, PLEASE MAKE CHANGES
 
 
 // Instantiating Twit module with required twitter configurations
